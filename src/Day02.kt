@@ -6,9 +6,16 @@ fun main() {
     "A" to "ROCK",
     "B" to "PAPER",
     "C" to "SCISSORS",
+    // below values only used for part 1
     "X" to "ROCK",
     "Y" to "PAPER",
     "Z" to "SCISSORS"
+  )
+
+  val targetOutcomes: HashMap<String, String> = hashMapOf(
+    "X" to "LOSE",
+    "Y" to "DRAW",
+    "Z" to "WIN"
   )
 
   val rockPaperScissors: HashMap<String, Int> = hashMapOf(
@@ -59,6 +66,41 @@ fun main() {
     return outcome?.toInt()!! + rockPaperScissors.get("SCISSORS")!!.toInt()
   }
 
+  // Given your opponent's move, return the move you need to play to win the round
+  fun win(oppenentMove: String): String {
+    val yourMove = when(shapes[oppenentMove]) {
+      "ROCK" -> "B"
+      "PAPER" -> "C"
+      "SCISSORS" -> "A"
+      else -> ""
+    }
+
+    return yourMove.toString()!!
+  }
+
+  // Given your opponent's move, return the move you need to play to lose the round
+  fun lose(oppenentMove: String): String {
+    val yourMove = when(shapes[oppenentMove]) {
+      "ROCK" -> "C"
+      "PAPER" -> "A"
+      "SCISSORS" -> "B"
+      else -> ""
+    }
+
+    return yourMove.toString()!!
+  }
+  // Given your opponent's move, return the move you need to play for the round to end in a draw
+  fun draw(oppenentMove: String): String {
+    val yourMove = when(shapes[oppenentMove]) {
+      "ROCK" -> "A"
+      "PAPER" -> "B"
+      "SCISSORS" -> "C"
+      else -> ""
+    }
+
+    return yourMove.toString()!!
+  }
+
   // Given an opponent's move and player's move, return the score for that round
   fun scoreRound(round: String): Int {
     val (yourMove, opponentMove) = round.split(" ")
@@ -71,6 +113,19 @@ fun main() {
     return score!!.toInt()
   }
 
+  fun getMoves(round: String): String {
+    val (opponentMove, desiredScore) = round.split(" ")
+    val yourMove = when (targetOutcomes[desiredScore]) {
+      "WIN" -> win(opponentMove)
+      "LOSE" -> lose(opponentMove)
+      "DRAW" -> draw(opponentMove)
+      else -> ""
+    }
+
+    val moves = listOf(opponentMove, yourMove)
+    return (moves.joinToString(" "))
+  }
+
   fun part1(input: List<String>): Int {
     val finalScore = input.fold(0) { runningScore, round ->
       runningScore + scoreRound(round)
@@ -79,14 +134,18 @@ fun main() {
   }
 
   fun part2(input: List<String>): Int {
-    return input.size
+    val finalScore = input.fold(0) { runningScore, round ->
+      runningScore + (scoreRound(getMoves(round)))
+    }
+    return finalScore
   }
 
   // test if implementation meets criteria from the description, like:
   val testInput = readInput("Day02_sample")
   check(part1(testInput) == 15)
+  check(part2(testInput) == 12)
 
   val input = readInput("Day02")
   println(part1(input))
-  // println(part2(input))
+  println(part2(input))
 }
