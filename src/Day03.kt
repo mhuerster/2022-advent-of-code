@@ -2,47 +2,58 @@ fun main() {
   var lowercase = ('a'..'z')
   var uppercase = ('A'..'Z')
 
-  fun priority(item: Char): Int {
-    val p = if (lowercase.contains(item)) {
-      lowercase.indexOf(item) + 1
-    } else {
-      uppercase.indexOf(item) + 27
+  class Rucksack(val contents: String ) {
+    val midpoint: Int
+      get() = (contents.length / 2)
+    val firstCompartment: String
+      get() = contents.substring(0..midpoint)
+    val secondCompartment: String
+     get() = contents.substring(midpoint..contents.lastIndex)
+
+    fun commonItem(): Char {
+      return firstCompartment.find { secondCompartment.contains(it) }!!.toChar()
     }
-    return p.toInt()!!
-  }
 
-  fun firstCompartment(rucksack: String): String {
-    val midpoint = (rucksack.length / 2) - 1
-    return rucksack.substring(0..midpoint)
-  }
-
-  fun secondCompartment(rucksack: String): String {
-    val midpoint = (rucksack.length / 2)
-    return rucksack.substring(midpoint..rucksack.lastIndex)
-  }
-
-  fun commonItem(rucksack: String): Char {
-    return firstCompartment(rucksack).find {
-      secondCompartment(rucksack).contains(it)
-    }!!.toChar()
-  }
-
-  fun badge(rucksacks: List<String>): Char {
-    val (firstElf, secondElf, thirdElf) = rucksacks.map { it.toSet() }
-    return(firstElf.intersect(secondElf).intersect(thirdElf)).single()
-  }
-
-  fun part1(rucksacks: List<String>): Int {
-    return rucksacks.fold(0) { sum, rucksack ->
-      sum + priority((commonItem(rucksack)))
+    fun toSet(): Set<Char> {
+      return contents.toSet()
     }
   }
 
-  fun part2(rucksacks: List<String>): Int {
-    val groups = rucksacks.chunked(3)
+  class Item(val item: Char) {
+    fun priority(): Int {
+      val p = if (lowercase.contains(item)) {
+        lowercase.indexOf(item) + 1
+      } else {
+        uppercase.indexOf(item) + 27
+      }
+      return p.toInt()!!
+    }
+  }
+
+  class Group(val rucksacks: List<Rucksack>) {
+    fun badge(): Item {
+      val (firstElf, secondElf, thirdElf) = rucksacks.map { it.toSet() }
+      return Item(firstElf.intersect(secondElf).intersect(thirdElf).single())
+    }
+  }
+
+  fun inputToRucksacks(input: List<String>): List<Rucksack> {
+    return input.map { Rucksack(it) }
+  }
+// Find the item type that appears in both compartments of each rucksack.
+// What is the sum of the priorities of those item types?
+  fun part1(input: List<String>): Int {
+    return inputToRucksacks(input).fold(0) { sum, rucksack ->
+      sum + Item(rucksack.commonItem()).priority()
+    }
+  }
+// Find the item type that corresponds to the badges of each three-Elf group.
+// What is the sum of the priorities of those item types?
+  fun part2(input: List<String>): Int {
+    val groups = inputToRucksacks(input).chunked(3).map { Group(it) }
 
     return groups.fold(0) { sum, group ->
-      sum + priority(badge(group))
+      sum + group.badge().priority()
     }
   }
 
