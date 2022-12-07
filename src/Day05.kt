@@ -1,4 +1,7 @@
 fun main() {
+  val instructionPattern = "move\\s(\\d+)\\D+(\\d+)\\D+(\\d+)".toRegex()
+  data class Instruction(val quantity: Int, val fromIndex: Int, val toIndex: Int)
+
   // TODO: parse start state from file
   val sampleInitialState = mutableMapOf(
     1 to "ZN",
@@ -16,16 +19,14 @@ fun main() {
     8 to "ZLPHSCMV",
     9 to "RPFLWGZ",
   )
-  val instructionPattern = "move\\s(\\d+)\\D+(\\d+)\\D+(\\d+)".toRegex()
 
-  fun parseInstruction(instruction: String): List<Int> {
+  fun parseInstruction(instruction: String): Instruction {
     val matches = instructionPattern.find(instruction)!!
-    val (a, b, c) = matches.destructured
-    val components = listOf(a, b, c) // TODO: get rid of intermediate vals
-    return (components.map { it.toInt() })
+    val (a, b, c) = matches.destructured.toList().map { it.toInt() }
+    return Instruction(a, b, c)
   }
 
-  fun executeInstruction9000(instruction: List<Int>, stacks: MutableMap<Int, String>): MutableMap<Int, String> {
+  fun executeInstruction9000(instruction: Instruction, stacks: MutableMap<Int, String>): MutableMap<Int, String> {
     val (quantity, fromStackIndex, toStackIndex) = instruction
     val fromStack = stacks.get(fromStackIndex)
     val toStack = stacks.get(toStackIndex)
@@ -69,17 +70,17 @@ fun main() {
     return(newStacks.values.map { it.last() }.joinToString(""))
   }
 
-  fun part2(input: List<String>, initialState: MutableMap<Int, String>): String {
-    var newStacks = initialState
-    for (line in input) {
-      if (instructionPattern.matches(line)) {
-        val instruction = (parseInstruction(line))
-        newStacks = executeInstruction9001(instruction, newStacks)
-      }
-    }
-
-    return(newStacks.values.map { it.last() }.joinToString(""))
-  }
+  // fun part2(input: List<String>, initialState: MutableMap<Int, String>): String {
+  //   var newStacks = initialState
+  //   for (line in input) {
+  //     if (instructionPattern.matches(line)) {
+  //       val instruction = (parseInstruction(line))
+  //       newStacks = executeInstruction9001(instruction, newStacks)
+  //     }
+  //   }
+  //
+  //   return(newStacks.values.map { it.last() }.joinToString(""))
+  // }
 
   val testInput = readInput("Day05_sample")
   val input = readInput("Day05")
@@ -90,7 +91,7 @@ fun main() {
   println(part1(input, initialState))
 
   // check(part2(testInput)
-  println(part2(testInput, sampleInitialState))
-  check(part2(testInput, sampleInitialState) == "MCD")
-  println(part2(input, initialState))
+  // println(part2(testInput, sampleInitialState))
+  // check(part2(testInput, sampleInitialState) == "MCD")
+  // println(part2(input, initialState))
 }
