@@ -82,34 +82,6 @@ fun main() {
         }
     }
 
-    // hard code sample input
-    // val hardcodedRoot = Directory("/", "ROOT", mutableListOf<FakeFile>())
-    // val a = Directory("a")
-    // hardcodedRoot.add(a)
-    // hardcodedRoot.add(FakeFile("14848514 b.txt"))
-    // hardcodedRoot.add(FakeFile("8504156 c.dat"))
-    // val d = Directory("d")
-    // hardcodedRoot.add(d)
-    // val e = Directory("e")
-    // a.add(e)
-    // a.add(FakeFile("29116 f"))
-    // a.add(FakeFile("2557 g"))
-    // a.add(FakeFile("62596 h.lst"))
-    // e.add(FakeFile("584 i"))
-    // d.add(FakeFile("4060174 j"))
-    // d.add(FakeFile("8033020 d.log"))
-    // d.add(FakeFile("5626152 d.ext"))
-    // d.add(FakeFile("7214296 k"))
-    //
-    // hardcodedRoot.printFiles()
-    //
-    // check(e.sumFilesSizes() == 584)
-    // check(e.sumFilesSizes() == 584)
-    // check(a.sumFilesSizes() == 94853)
-    // check(d.sumFilesSizes() == 24933642)
-    // check(hardcodedRoot.sumFilesSizes() == 48381165)
-    // check(hardcodedRoot.cappedSumFilesSizes(100000) == 95437)
-
     class Nav(var dirs: MutableList<Directory> = mutableListOf<Directory>()) {
         fun pwd() : Directory {
             return dirs.last()
@@ -159,24 +131,13 @@ fun main() {
                 cdRegex.matches(line) -> nav.cd(line)
             }
         }
-        // root.printFiles()
         return root
     }
 
+    val testInput = readInput("Day07_sample")
+    val input = readInput("Day07")
 
-//    fun part1(terminalOutput: List<String>): Int {
-//        val root = Directory("/", "ROOT", mutableListOf<FakeFile>())
-//        return terminalOutput.size
-//    }
-
-//  fun part2(input: List<String>): Int {
-//    return input.size
-//  }
-//
-//  // test if implementation meets criteria from the description, like:
- val testInput = readInput("Day07_sample")
- val input = readInput("Day07")
-
+    // test if implementation meets criteria from the description, like:
     val testFs = parseTerminalOutput(testInput)
     check(testFs.sumFilesSizes() == 48381165)
     check(testFs.cappedSumFilesSizes(100000) == 95437)
@@ -184,12 +145,4 @@ fun main() {
 
     val fs = parseTerminalOutput(input)
     println(fs.cappedSumFilesSizes(100000))
-
-//  println(part1(testInput))
-//  // check(part1(testInput) == 1)
-//  println(part2(testInput))
-//  // check(part2(testInput) == 1)
-//
-//  println(part1(input))
-//  println(part2(input))
 }
