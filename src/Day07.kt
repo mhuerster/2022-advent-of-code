@@ -3,6 +3,9 @@ fun main() {
     val directoryRegex = "dir\\s(\\w+)".toRegex()
     val fileNameRegex = "(\\d+)\\s(\\w+\\.?\\w*)".toRegex()
 
+    val totalSpace = 70000000
+    val freeSpaceNeeded = 30000000
+
     open class FakeFile(var name: String, var dirName: String = "/", var size: Int = 0) {
         constructor(rawFileName: String, dirName: String) : this("", dirName, 0) {
             val (parsedSize, parsedName) = fileNameRegex.find(rawFileName)!!.destructured
@@ -80,6 +83,19 @@ fun main() {
                 }
             }
         }
+
+        // 8381165
+        fun dirSizes(size: Int) : List<Int> {
+            return files.fold(listOf<Int>()) { dirs, file ->
+                if (file is Directory) {
+                    val nestedSize = file.sumFilesSizes()
+                    dirs.plus(nestedSize).plus(file.dirSizes(size))
+                }
+                else {
+                    dirs
+                }
+            }.filter { it > size }
+        }
     }
 
     class Nav(var dirs: MutableList<Directory> = mutableListOf<Directory>()) {
@@ -141,8 +157,19 @@ fun main() {
     val testFs = parseTerminalOutput(testInput)
     check(testFs.sumFilesSizes() == 48381165)
     check(testFs.cappedSumFilesSizes(100000) == 95437)
-    println(testFs.cappedSumFilesSizes(100000))
+    // println(testFs.cappedSumFilesSizes(100000))
+    // println(testFs.dirSizes(100000).min())
+
+    // val currentFreeSpace = totalSpace - testFs.sumFilesSizes()
+    // val spaceStillNeeded = freeSpaceNeeded - currentFreeSpace
+    // check(spaceStillNeeded == 8381165)
+
 
     val fs = parseTerminalOutput(input)
-    println(fs.cappedSumFilesSizes(100000))
+    val currentFreeSpace = totalSpace - fs.sumFilesSizes()
+    val spaceStillNeeded = freeSpaceNeeded - currentFreeSpace
+    println(fs.dirSizes(spaceStillNeeded).min())
+
+    // println(fs.cappedSumFilesSizes(100000))
+    // println(fs.sumFilesSizes())
 }
